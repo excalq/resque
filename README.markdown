@@ -18,7 +18,6 @@ If your stack requires redis-2.6 or less, use tag v1.23.2:
 gem 'resque', '1.23.2', :git => 'git://github.com/excalq/resque.git'
 ```
 
-
 Resque
 ======
 
