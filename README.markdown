@@ -1,6 +1,6 @@
-FORK
+Fork Notes
 =====
-_excalq/resque_
+For _excalq/resque_ April 2013
 
 This fork is a small modification to [resque/resque](https://github.com/resque/resque) 
 which displays failures in newest-first order. This makes the user-experience diagnosing
