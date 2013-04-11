@@ -35,7 +35,21 @@ module Resque
 
       def self.all(offset = 0, limit = 1, queue = nil)
         check_queue(queue)
-        Resque.list_range(:failed, offset, limit)
+        # Excalq: Backported fix into this fork of Resque 1.x. Thanks to @jsuder
+        # See https://github.com/jsuder/resque/commit/8a4176f0cd413749e7ee59b94d04dd88235b3a87
+        # Resque.list_range(:failed, offset, limit) # Old: shows failures in oldest-to-newest order.
+        # New Code, showing newest failures first in resque-web:
+        start = self.count - count - start
+        if start < 0
+          count += start
+          start = 0
+        end
+        if count > 0
+          Resque.list_range(:failed, start, count).reverse
+        else
+          []
+        end
+        #--- END resque-web fix ---
       end
 
       def self.each(offset = 0, limit = self.count, queue = :failed, class_name = nil, order = 'desc')
