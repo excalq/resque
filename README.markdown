@@ -1,3 +1,17 @@
+FORK
+=====
+_excalq/resque_
+
+This fork is a small modification to [resque/resque](https://github.com/resque/resque) 
+which displays failures in newest-first order. This makes the user-experience diagnosing
+job failures easier. Also, as resque/resque's master branch is unstable and removes resque-web,
+this makes tag v1.25 (lastest 1.x code) the master as well.
+
+Use this version by modifying your Gemfile thusly:
+```
+gem 'resque', :git => 'git://github.com/excalq/resque.git'
+```
+
 Resque
 ======
 
