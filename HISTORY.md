@@ -1,9 +1,10 @@
-## Unreleased
+## v1.25 (Unreleased in resque/resque) (2013-4-11)
 * Updates fork method so [resque-multi-job-forks](https://github.com/stulentsev/resque-multi-job-forks)
   monkey patching works again. See discussion at https://github.com/defunkt/resque/pull/895 for more
   context (@jonhyman)
 * Fixed uninitialize constant for the module/class that contains the perform 
   method causing job failures to no be reported, #792 (@sideshowcoder)
+* (excalq): Reversed order of resque-web failure reports for newest-first ordering.
 
 ## 1.24.1 (2013-3-23)
 
