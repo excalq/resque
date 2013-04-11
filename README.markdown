@@ -2,6 +2,7 @@ Fork Notes
 =====
 For _excalq/resque_ April 2013
 
+(NOT YET COMPLETE - STILL BUGGY)
 This fork is a small modification to [resque/resque](https://github.com/resque/resque) 
 which displays failures in newest-first order. This makes the user-experience diagnosing
 job failures easier. Also, as resque/resque's master branch is unstable and removes resque-web,
