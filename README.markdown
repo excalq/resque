@@ -2,7 +2,6 @@ Fork Notes
 =====
 For _excalq/resque_ April 2013
 
-(NOT YET COMPLETE - STILL BUGGY)
 This fork is a small modification to [resque/resque](https://github.com/resque/resque) 
 which displays failures in newest-first order. This makes the user-experience diagnosing
 job failures easier. Also, as resque/resque's master branch is unstable and removes resque-web,
@@ -16,7 +15,7 @@ gem 'resque', :git => 'git://github.com/excalq/resque.git'
 
 If your stack requires redis-2.6 or less, use tag v1.23.2:
 ```
-gem 'resque', '1.23.2', :git => 'git://github.com/excalq/resque.git'
+gem 'resque',  :git => 'git://github.com/excalq/resque.git', :tag => 'v1.23.2'
 ```
 
 Resque
