@@ -18,7 +18,7 @@ module Resque
       end
 
       def self.count(queue = nil, class_name = nil)
-        raise ArgumentError, "invalid queue: #{queue}" if queue && queue.to_s != "failed"
+        check_queue(queue)
 
         if class_name
           n = 0
@@ -34,12 +34,30 @@ module Resque
       end
 
       def self.all(offset = 0, limit = 1, queue = nil)
-        raise ArgumentError, "invalid queue: #{queue}" if queue && queue.to_s == "failed"
-        Resque.list_range(:failed, offset, limit)
+        check_queue(queue)
+        # Excalq: Backported fix into this fork of Resque 1.x. Thanks to @jsuder
+        # See https://github.com/jsuder/resque/commit/8a4176f0cd413749e7ee59b94d04dd88235b3a87
+        # Resque.list_range(:failed, offset, limit) # Old: shows failures in oldest-to-newest order.
+        # New Code, showing newest failures first in resque-web:
+        start = self.count - count - start
+        if start < 0
+          count += start
+          start = 0
+        end
+        if count > 0
+          Resque.list_range(:failed, start, count).reverse
+        else
+          []
+        end
+        #--- END resque-web fix ---
       end
 
-      def self.each(offset = 0, limit = self.count, queue = :failed, class_name = nil)
-        Array(all(offset, limit, queue)).each_with_index do |item, i|
+      def self.each(offset = 0, limit = self.count, queue = :failed, class_name = nil, order = 'desc')
+        all_items = Array(all(offset, limit, queue))
+        if order.eql? 'desc'
+          all_items.reverse!
+        end
+        all_items.each_with_index do |item, i|
           if !class_name || (item['payload'] && item['payload']['class'] == class_name)
             yield offset + i, item
           end
@@ -47,7 +65,7 @@ module Resque
       end
 
       def self.clear(queue = nil)
-        raise ArgumentError, "invalid queue: #{queue}" if queue && queue.to_s == "failed"
+        check_queue(queue)
         Resque.redis.del(:failed)
       end
 
@@ -82,6 +100,10 @@ module Resque
             i += 1
           end
         end
+      end
+
+      def self.check_queue(queue)
+        raise ArgumentError, "invalid queue: #{queue}" if queue && queue.to_s != "failed"
       end
 
       def filter_backtrace(backtrace)
