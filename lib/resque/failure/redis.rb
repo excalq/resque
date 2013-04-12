@@ -35,19 +35,24 @@ module Resque
 
       def self.all(offset = 0, limit = 1, queue = nil)
         check_queue(queue)
-        # excalq: Updated to show in newest-first order
-        # based on https://github.com/jsuder/resque/commit/8a4176f0cd413749e7ee59b94d04dd88235b3a87
-        # Adapted for resque v1.23 (For gem redis < 3.0 support)
-        offset = self.count - limit - offset
-        if offset < 0
-          limit += offset
-          offset = 0
-        end
-        if limit > 0
-          Resque.list_range(:failed, offset, limit).reverse
-        else
-          []
-        end
+        # Excalq's Reverse-Window Transformation
+        # Because we want to see the newest-first, we'll call the last first
+        # and reverse each block of returned failures
+        # F = Total Failures
+        # s = offset (start)
+        # c = limit  (count)
+        # a: start of range = F - (s + c) (or zero if less)
+        # b: end of range = a + c - 1
+        # Then reverse [a..b] (So each page is newest..oldest)
+        # If there are 30 failures, and showing 20 at a time:
+        # start with 10-30, next page: 0-10
+
+        first = self.count - (offset + limit) if limit > 1
+        first = [first, 0].max
+        failures = Resque.list_range(:failed, first, limit)
+        return failures if count == 1
+        return failures.reverse! if failures.is_a? Array
+        return Hash[failures.to_a.reverse] if failures.is_a? Hash
       end
 
       def self.each(offset = 0, limit = self.count, queue = :failed, class_name = nil, order = 'desc')
